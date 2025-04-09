@@ -4,10 +4,10 @@ services:
   # Express.js Backend
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-      ports:
-        "3050:3050"
+    ports:
+      - "3050:3050"
 
     networks:
       - app-network
@@ -15,22 +15,21 @@ services:
 
 
 
-  # Nginx Reverse Proxy
-  nginx-config:
-    image: alpine:latest
+  nginx-config-backend:
+    build:
+      context: ./nginx-config
+      dockerfile: Dockerfile
     volumes:
-      - ./nginx.conf:/nginx.conf:ro
+      - ./nginx-config/nginx.conf:/nginx.conf:ro
       - /etc/nginx/sites-available:/sites-available
       - /etc/nginx/sites-enabled:/sites-enabled
     command: >
       sh -c "cp -f /nginx.conf /sites-available/flapi.serp24.online &&
-             ln -sf /etc/nginx/sites-available/flapi.serp24.online /sites-enabled/flapi.serp24.online &&
+             ln -sf /sites-available/flapi.serp24.online /sites-enabled/flapi.serp24.online &&
              ls -l /sites-enabled/flapi.serp24.online &&
-             nginx -t && systemctl restart nginx|| echo 'NGINX test failed'"
-    # Runs once and exits
+             /usr/sbin/nginx -t -c /sites-available/flapi.serp24.online && echo 'NGINX config test passed' || echo 'NGINX config test failed'"
     networks:
       - app-network
-    
 networks:
   app-network:
     driver: bridge
