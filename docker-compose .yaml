@@ -15,21 +15,18 @@ services:
 
 
 
-nginx-config-backend:
-  build:
-    context: ./nginx-config
-    dockerfile: Dockerfile
-  volumes:
-    - ./nginx-config/nginx.conf:/nginx.conf:ro
-    - /etc/nginx/sites-available:/sites-available
-    - /etc/nginx/sites-enabled:/sites-enabled
-  command: >
-    sh -c "cp -f /nginx.conf /sites-available/flapi.serp24.online &&
-           ln -sf /sites-available/flapi.serp24.online /sites-enabled/flapi.serp24.online &&
-           ls -l /sites-enabled/flapi.serp24.online &&
-           /usr/sbin/nginx -t -c /sites-available/flapi.serp24.online && echo 'NGINX config test passed' || echo 'NGINX config test failed'"
-  networks:
-    - app-network
+  nginx-config-backend:
+    image: alpine:latest
+    volumes:
+      - ./nginx.conf:/nginx.conf:ro
+      - /etc/nginx/sites-available:/sites-available
+      - /etc/nginx/sites-enabled:/sites-enabled
+    command: >
+      sh -c "cp -f /nginx.conf /sites-available/flapi.serp24.online &&
+             ln -sf /etc/nginx/sites-available/flapi.serp24.online /sites-enabled/flapi.serp24.online &&
+             ls -l /sites-enabled/flapi.serp24.online &&
+             nginx -t || echo 'NGINX test failed'"
+    # Runs once and exits
     
 networks:
   app-network:

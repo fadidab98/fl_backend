@@ -8,7 +8,7 @@ const { body, validationResult } = require('express-validator'); // For input va
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3050;
 
 // MySQL Connection Pool with secure configuration
 const db = mysql.createPool({
